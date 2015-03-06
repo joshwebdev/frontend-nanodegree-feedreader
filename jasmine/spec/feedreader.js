@@ -100,22 +100,17 @@ $(function() {
          * Remember, loadFeed() is asynchronous.
          */
 
-         // wait two seconds, giving the app ample time to load the initial feed HTML
+         // load feed 0 first.  its HTML will later be compared with feed 1's HTML.
          beforeEach(function(done) {
-            setTimeout(function() {
-                done();
-            }, 2000);
+            loadFeed(0, done);
          });
 
-         it('actually changes the content', function() {
-            var initialHTML = $('.feed').html();
-            $('.menu-icon-link').click(); // click to open the menu
-            expect($('body').attr('class')).not.toContain('menu-hidden'); // make sure the menu is now open
-            $('.feed-list').children('li').last().children('a').click(); // click the last feed entry in the menu
-            // wait two seconds, giving the app time to load the new feed
-            setTimeout(function() {
-                expect($('.feed').html()).not.toEqual(initialHTML); // compare the feed's HTML from before and after clicking a menu item
-            }, 2000);
+         it('actually changes the content', function(done) {
+            var initialHTML = $('.feed').html(); // grab the feed 0 HTML
+            loadFeed(1, function() { // load feed 1 and perform the test asynchronously after feed 1 has been loaded
+                expect($('.feed').html()).not.toEqual(initialHTML); // compare feed 0's HTML with this new feed 1 HTML
+                done();
+            });
          });
     });
 }());
